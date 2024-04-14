@@ -109,20 +109,23 @@ export default function App() {
   const scrapePlaylists = async () => {
     try {
       setIsPlaylistsLoading(true);
+      setPlaylists(testPlaylist);
+      setIsPlaylistsLoading(false);
 
-      const api_url = 'http://localhost:5000/initialize/';
-      await fetch(api_url)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          setPlaylists(data);
+
+      // const api_url = 'http://localhost:5000/initialize/';
+      // await fetch(api_url)
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     console.log(data);
+      //     setPlaylists(data);
           
-          setIsPlaylistsLoading(false);
-        })
-        .catch(error => {
-          console.error('Error:', error.message)
-          setIsPlaylistsLoading(false);
-      });
+      //     setIsPlaylistsLoading(false);
+      //   })
+      //   .catch(error => {
+      //     console.error('Error:', error.message)
+      //     setIsPlaylistsLoading(false);
+      // });
       
     } catch (error) {
       console.error('Error:', error.message);
@@ -133,20 +136,23 @@ export default function App() {
   const sendPrompt = async (prompt) => {
     try {
       setIsPromptLoading(true);
+      setPromptResponse(testRes);
+      setRecv(true);
+      setIsPromptLoading(false);
 
       const api_url = 'http://localhost:5000/submit_prompt/?prompt=' + encodeURIComponent(prompt);
-      await fetch(api_url)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          setPromptResponse(data);
-          setRecv(true);
-          setIsPromptLoading(false);
-        })
-        .catch(error => {
-          console.error('Error:', error.message)
-          setIsPromptLoading(false);
-      });
+      // await fetch(api_url)
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     console.log(data);
+      //     setPromptResponse(data);
+      //     setRecv(true);
+      //     setIsPromptLoading(false);
+      //   })
+      //   .catch(error => {
+      //     console.error('Error:', error.message)
+      //     setIsPromptLoading(false);
+      // });
 
     } catch (error) {
       console.error('Error:', error.message);
