@@ -67,7 +67,7 @@ export default function App() {
   const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(false);
 
   useEffect(() => {
-    // scrapePlaylists();
+    scrapePlaylists();
   }, []);
 
   const scrapePlaylists = async () => {
