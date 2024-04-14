@@ -115,10 +115,8 @@ export default function App() {
         .then(response => response.json())
         .then(data => {
           console.log(data);
-
-          // TODO: change this once we're ready
-          // setPlaylists(data);
-          setPlaylists(testPlaylist);
+          setPlaylists(data);
+          
           setIsPlaylistsLoading(false);
         })
         .catch(error => {
