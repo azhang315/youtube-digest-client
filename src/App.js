@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Markdown from 'react-markdown'
 import { testPlaylist } from './data';
 import { testRes } from './res';
+import Video from './Video';
 
 
 const PlaylistReference = ({ playlists, isPlaylistsLoading }) => {
@@ -33,8 +34,28 @@ const PlaylistReference = ({ playlists, isPlaylistsLoading }) => {
   )
 };
 
+const Item = ({ item }) => {
+  const [showVideo, setShowVideo] = useState(false);
+  const handleMouseEnter = () => {
+    setShowVideo(true);
+  };
 
-const Response = ({ promptResponse, isPromptLoading, recv }) => (
+  const handleMouseLeave = () => {
+    setShowVideo(false);
+  };
+
+  return(
+    <div className="py-2 " onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} >
+      <a className='text-blue-600 underline mr-2' href={item.video_url} target='_blank' rel="noreferrer">{item.Timestamp}</a>
+      <span>{item.Description}</span>
+      {showVideo && <Video url={item.video_url}/>}
+    </div>
+  )
+}
+
+
+const Response = ({ promptResponse, isPromptLoading, recv }) => {
+  return (
   <div className="pb-10 mb-8 h-[530px] ">
     <h2 className="text-lg font-bold mb-4 border-b border-gray-300 pt-4 pb-1 px-6">Response</h2>
     <div className="overflow-y-auto max-h-[450px]">
@@ -49,15 +70,12 @@ const Response = ({ promptResponse, isPromptLoading, recv }) => (
           <h3 className='text-xl font-bold my-4 border-b '>Key Moments</h3>
           {
             Object.entries(promptResponse.timestamps).map(([video_id, items], index) => (
-              <div key={index} className="mb-2">
+              <div key={index} className="mb-2 relative">
                 {items.length > 0 && <h3 className="text-lg font-bold">Video {index + 1}</h3>}
                 
-    
                 {items.map((item, index) => (
-                  <div key={index}>
-                    <a className='text-blue-600 underline mr-2' href={item.video_url} target='_blank' rel="noreferrer">{item.Timestamp}</a>
-                    <span>{item.Description}</span>
-                  </div>
+                  <Item item={item} key={index}/>
+                  
                 ))}
               </div>
             ))
@@ -66,7 +84,7 @@ const Response = ({ promptResponse, isPromptLoading, recv }) => (
       )}
     </div>
   </div>
-);
+)};
 
 
 const TitleCard = ({ handleSubmit }) => (
