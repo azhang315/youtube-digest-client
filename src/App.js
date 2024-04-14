@@ -6,19 +6,19 @@ import { testRes } from './res';
 
 const PlaylistReference = ({ playlists, isPlaylistsLoading }) => {
   return (
-    <div className="p-2 mb-8 max-h-full overflow-y-auto ">
+    <div className="p-4 mb-8 max-h-[600px] overflow-y-auto border border-gray-300 rounded-lg">
       <h2 className="text-lg font-bold mb-4">Playlist Reference</h2>
       {isPlaylistsLoading ? (
         <p>Loading playlists...</p>
       ) : (
         Object.entries(playlists).map(([playlist_name, items], index) => (
           <div key={index} className="mb-2">
-            <h3 className="text-lg font-bold mb-1">{playlist_name}</h3>
+            <h3 className="text-lg mb-1">{playlist_name}</h3>
 
             {items.map((item, index) => (
               <a href={item.video_url} className='hover:opacity-90' target='_blank' rel="noreferrer">
                 <div className="flex" key={index}>
-                  <img src={item.thumbnail_url} alt={item.title} className="w-24 h-20 object-cover rounded-md mb-2 mr-2" />
+                  <img src={item.thumbnail_url} alt={item.title} className="w-24 h-16 object-cover rounded-md mb-2 mr-2" />
                   <div>
                     <p className='text-sm font-bold mb-1'>{item.title}</p>
                     <p className='text-sm font-light'>{item.channel}</p>
@@ -35,7 +35,7 @@ const PlaylistReference = ({ playlists, isPlaylistsLoading }) => {
 
 
 const Response = ({ promptResponse, isPromptLoading, recv }) => (
-  <div className="mb-8">
+  <div className="pb-10 mb-8 h-[530px] ">
     <h2 className="text-lg font-bold mb-4 border-b border-gray-300 pt-4 pb-1 px-6">Response</h2>
     <div className="overflow-y-auto max-h-[450px]">
       {isPromptLoading || !recv ?  (
@@ -43,14 +43,15 @@ const Response = ({ promptResponse, isPromptLoading, recv }) => (
         : <p className='px-6'>Please enter a prompt to receive a response.</p>
       ) : (
         <div className='px-6'>
-          <h3 className='text-lg font-bold mb-4 border-b bg-red-200'>Summary</h3>
+          <h3 className='text-xl font-bold mb-4 border-b '>Summary</h3>
           <p><Markdown>{promptResponse.summary}</Markdown></p>
           
-          <h3 className='text-lg font-bold my-4 border-b bg-red-200'>Key Moments</h3>
+          <h3 className='text-xl font-bold my-4 border-b '>Key Moments</h3>
           {
             Object.entries(promptResponse.timestamps).map(([video_id, items], index) => (
               <div key={index} className="mb-2">
-                <h3 className="text-lg font-bold">Video {index + 1}</h3>
+                {items.length > 0 && <h3 className="text-lg font-bold">Video {index + 1}</h3>}
+                
     
                 {items.map((item, index) => (
                   <div key={index}>
@@ -69,14 +70,16 @@ const Response = ({ promptResponse, isPromptLoading, recv }) => (
 
 
 const TitleCard = ({ handleSubmit }) => (
-  <div className="p-8 mb-4 max-w-md max-h-32">
-    <h1 className="text-4xl font-bold leading-tight text-gray-900 mb-2">YouTube Digest*</h1>
-    <p className='mb-4'>You're logged in as ahzhang@umich.edu</p>
+  <div className="p-6 ">
+    <h1 className="text-4xl font-bold leading-tight text-gray-900 mb-2">YouTube Digest Companion</h1>
+    <p className='text-sm text-gray-700 mb-4'>Watch Later → Digest Now.</p>
+    <p className='mb-2'>You're logged in as alexzhang3209@gmail.com</p>
+
     <form onSubmit={handleSubmit} className="mb-4 flex items-center relative">
       <input
         type="text"
         name="prompt"
-        className="flex-grow border border-gray-300 rounded-md py-2 px-4 mb-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 ease-in-out"
+        className="flex-1 border border-gray-300 rounded-md py-2 px-4 mb-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all duration-300 ease-in-out"
         placeholder="Ask a question..."
       />
       <button
@@ -109,9 +112,12 @@ export default function App() {
   const scrapePlaylists = async () => {
     try {
       setIsPlaylistsLoading(true);
+
+      // sleep for one second to simulate loading
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setPlaylists(testPlaylist);
       setIsPlaylistsLoading(false);
-
 
       // const api_url = 'http://localhost:5000/initialize/';
       // await fetch(api_url)
@@ -136,23 +142,21 @@ export default function App() {
   const sendPrompt = async (prompt) => {
     try {
       setIsPromptLoading(true);
-      setPromptResponse(testRes);
-      setRecv(true);
-      setIsPromptLoading(false);
 
       const api_url = 'http://localhost:5000/submit_prompt/?prompt=' + encodeURIComponent(prompt);
-      // await fetch(api_url)
-      //   .then(response => response.json())
-      //   .then(data => {
-      //     console.log(data);
-      //     setPromptResponse(data);
-      //     setRecv(true);
-      //     setIsPromptLoading(false);
-      //   })
-      //   .catch(error => {
-      //     console.error('Error:', error.message)
-      //     setIsPromptLoading(false);
-      // });
+      await fetch(api_url)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+
+          setPromptResponse(data);
+          setRecv(true);
+          setIsPromptLoading(false);
+        })
+        .catch(error => {
+          console.error('Error:', error.message)
+          setIsPromptLoading(false);
+      });
 
     } catch (error) {
       console.error('Error:', error.message);
@@ -168,54 +172,25 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center">
+    <div className="min-h-screen flex flex-col justify-center items-center">
       <div className="max-w-screen-xl mx-auto mt-8 mb-10 flex flex-col justify-center items-center">
-        {/* Grid State A: Just the Title/Prompt card */}
-        {/* {!playlists && 
-          <div className="grid grid-cols-1 grid-rows-1 gap-4 p-8">
-            <TitleCard handleSubmit={handleSubmit} />
-          </div>
-        } */}
-
-        {/* Grid State C: 2 rows, 3 columns */}
+        
           <div className="grid grid-cols-3 grid-rows-3 gap-4 p-8">
-            {/* Title/Prompt Card */}
-            <div className="col-start-1 col-end-3 row-span-1 bg-red-200">
-              <TitleCard handleSubmit={handleSubmit} />
+            <div className="col-start-1 col-end-3 row-span-3 ">
+              <div className="">
+                <TitleCard handleSubmit={handleSubmit} />
+              </div>
+
+              <div className=" bg-gray-100 rounded-lg">
+                <Response promptResponse={promptResponse} isPromptLoading={isPromptLoading} recv={recv} />
+              </div>
             </div>
 
-            {/* Playlist Reference Card */}
             <div className="col-start-3 col-end-3 row-span-2 bg-white">
               <PlaylistReference playlists={playlists} isPlaylistsLoading={isPlaylistsLoading} />
             </div>
-
-            {/* Response Card */}
-            <div className="col-start-1 col-end-3 row-span-2 bg-red-100">
-              <Response promptResponse={promptResponse} isPromptLoading={isPromptLoading} recv={recv} />
-            </div>
           </div>
-
-        {/* Test Controls */}
-        {/* <div className="mb-4">
-          <button
-            onClick={scrapePlaylists}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md mr-4"
-          >
-            {isPlaylistsLoading ? "Loading Playlists..." : "Load Playlists"}
-          </button>
-          <button
-            onClick={sendPrompt}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md mr-4"
-          >
-            {isPromptLoading ? "Loading Response..." : "Load Response"}
-          </button>
-          <button
-            onClick={handleLoadAll}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-          >
-            Load All
-          </button>
-        </div> */}
+          
       </div>
     </div>
   );
